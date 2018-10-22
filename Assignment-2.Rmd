@@ -1,0 +1,155 @@
+---
+title: "Assignment 2"
+output: pdf_document
+---
+Assignment 2
+Due January 31st, 2017
+Total 44 points.
+
+**Please submit a well-commented R script, documenting all code used in this problem set, along with a write up answering all questions below. Use figures as appropriate to support your answers, and when required by the problem. Data: In this problem set we will use the nycflights13 R package that contains data for all flights that departed NYC (i.e. JFK, LGA or EWR) in 2013.** 
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(dplyr)
+install.packages("nycflights13") #install package 
+library(nycflights13) #load library
+data(flights) # load data on flights
+
+```
+####1. Let's explore flights from NYC to Seattle. Use the flights dataset to answer the following questions.
+
+**a) (2 pt) How many flights were there to and from NYC in 2013?**
+
+```{r}
+
+nrow(flights)
+
+```
+#There were 336,776 flights to from NYC in 2013. 
+
+```{r}
+nrow(filter(flights, dest %in% c("JFK","LGA", "EWR")))
+
+
+
+
+```
+#There was 1 flight that came to NYC airport.
+
+**b) (2 pt) How many flights were there from NYC airports to Seattle (SEA) in 2013?**
+
+```{r}
+sea <- (subset(flights, dest %in% "SEA"))
+nrow(sea)
+
+
+
+```
+#There are 3923 flights from NYC to Seattle.
+
+**c) (2 pt) How many airlines fly from NYC to Seattle? Hint: look at the function unique()**
+
+```{r}
+nrow(unique(sea[,"carrier"]))
+
+
+```
+#There are 5 airlines that fly from NYC to Seattle. 
+
+**d) (2 pt) What is the average arrival delay for flights from NYC to Seattle? Hint: if there are missing values in the vector you want the mean of, you have to remove them** 
+
+
+```{r}
+
+mean(sea$arr_delay, na.rm=T)
+
+
+
+
+```
+# The average arrival time for flights from NYC to Seattle is 1 minute early. 
+
+**2. Flights are often delayed. Consider the following questions exploring delay patterns.**
+**a) (4 pt) What is the mean arrival delay time? What is the median arrival delay time?**
+```{r}
+mean(flights$arr_delay, na.rm=T)
+median(flights$arr_delay, na.rm=T)
+
+```
+#The mean arrival delay time was 6 minutes and the median arrival time was 5 minutes early.
+
+**b) (2 pt) What does a negative arrival delay mean?**
+
+#Negative arrival time means they arrive before the scheduled arrival time.
+
+c) (4 pt) Plot a histogram of arrival delay times. Does the answers you obtained in (a)
+consistent with the shape of the delay time distribution?
+```{r}
+hist(flights$arr_delay, breaks=10000)
+
+```
+
+#Yes, the mean and median are aligning with the right skewed normal distribution curve.
+
+d) (4 pt) Is there seasonality in departure delays? Try 
+by(flights$dep_delay, flights$month, function(x) mean(x, na.rm=T))
+and describe what patterns you see. Is there a best month to leave New York? A worst?
+Why might this be?
+
+
+```{r}
+by(flights$dep_delay, flights$month, function(x) mean(x, na.rm=T))
+
+```
+# The delays are maximum in the months of June, July and December. June and July are the time for summer vacation travel and December will be the time when people travel for the holidays. So I assume that increase in the airport traffic will correlate to increase delays. Therefore, they are the worst months to leave from NYC.
+# November is the best month to leave from NYC as the arrival delay is the least, maybe the weather in November is the most conducive for air travel from NYC. 
+
+3. EDA
+a) (4 pt) Plot a histogram of the total air flight time with 100 breaks. (look at the help for hist()). How many peaks do you see in this distribution? What is an explanation for this?
+
+```{r}
+hist(flights$air_time, breaks=100)
+```
+# There are 6 peaks in the distribution. There are probably 6 major destinations of flights from NYC. 
+
+b) (4 pt) What time of day do flights most commonly depart? Why might there be two most
+popular times of day to depart?
+
+```{r}
+hist(flights$dep_time, col = "red")
+
+```
+# The most flights depart between 8am-9am and then from 3pm-4pm. 
+
+#8 am would mean the traveller needs to get to the airport by 6am, which is probably the most convenient time to start travel in the day and most flights are cheaper in the morning. 
+# 3pm is the most common time to depart in the evening, most likely because it will still allow business travellers can reach home before night. 
+
+c) (4 pt) Plot a box plot of departure delays and hour of departure. What pattern do you
+see? What is an explanation for this?
+
+```{r}
+boxplot(flights$dep_delay ~ cut(flights$dep_time, breaks = 18), ylim = c(0,800))
+
+```
+# towards the end of the day there is more variability in the departure delays. 
+
+4. (10 pt) Develop one research question you can address using the nycflights2013 dataset.
+Provide two visualizations to support your exploration of this question. Discuss what you find
+-------# We saw that the the number of flights vary among the different times of the day. what other patterns of distribution do the arrival and departure times of flights show. 
+
+```{r}
+hist(flights$dep_time, breaks = 48,col = "red")
+
+```
+
+```{r}
+hist(flights$arr_time, breaks = 48,col = "green")
+```
+
+# THere are more flights in arrivals and departure in the first 30 minutes of the hour than the second half. 
+
