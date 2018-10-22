@@ -1,0 +1,238 @@
+---
+title: "Assignment 3"
+author: "Felcy Selwyn"
+date: "February 13, 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+1) For each of the following situations, state whether the parameter of interest is a mean or a
+proportion. It may be helpful to examine whether individual responses are numerical or
+categorical.
+
+a) (1 pt) In a survey, one hundred college students are asked how many hours per week
+they spend on the Internet.
+
+Ans. The parameter of interest is Mean.
+
+b) (1 pt) In a survey, one hundred college students are asked: "What percentage of the
+time you spend on the Internet is part of your course work?"
+
+Ans. The parameter of interest is a proportion.
+
+
+c) (1 pt) In a survey, one hundred college students are asked whether or not they cited
+information from Wikipedia in their papers.
+
+Ans. The parameter of interest is a proportion.
+
+d) (1 pt) In a survey, one hundred college students are asked what percentage of their
+total weekly spending is on alcoholic beverages.
+
+Ans. The parameter of interest is a proportion. 
+
+e) (1 pt) In a sample of one hundred recent college graduates, it is found that 85 percent
+expect to get a job within one year of their graduation date.
+
+Ans. The parameter of interest is a proportion.
+
+2) (5 pt) In 2013, the Pew Research Foundation reported that "45% of U.S. adults report that they live with one or more chronic conditions". However, this value was based on a sample, so it may not be a perfect estimate for the population parameter of interest on its own. The study reported a standard error of about 1.2%, and a normal model may reasonably be used in this setting. Create a 95% confidence interval for the proportion of U.S. adults who live with one or more chronic conditions. Also interpret the confidence interval in the context of the study. 
+
+point estimate <- 45%
+SE <- 1.2%
+95% confidence interval
+
+Proportion of adults with chronic illness = point estimate ± 1.96 x SE
+ Plugging in the values, 
+ Proportion of adults with chronic illness = 45 ± 1.96*1.2 = 45±2.35 = 42.65 to 47.35.
+ 
+ 
+Answer: There is a 95% chance that the calculated confidence interval (42.65 to 47.35) will contain the true population proportion of the US adults who live with chronic conditions.
+
+
+
+
+3) The nutrition label on a bag of potato chips says that a one ounce (28 gram) serving of potato
+chips has 130 calories and contains ten grams of fat, with three grams of saturated fat. A random sample of 35 bags yielded a sample mean of 136 calories with a standard deviation of 17 calories.
+
+a) (4 pt) Write down the null and alternative hypotheses for a two-sided test of whether the
+nutrition label is lying.
+
+H0: ?? = 136, The mean calories in a bag of chips is equal to 136 calories.
+H1: ?? ??? 136, The mean calories in a bag of chips is not equal to 136 calories.
+
+b) (4 pt) Calculate the test statistic and find the p value.
+ Z= (136-130)/(17/squareroot(35)
+
+```{r}
+test.s <- (136-130)/(17/sqrt(35))
+ test.s
+ pnorm(test.s, lower.tail =F)
+ pnorm(-test.s, lower.tail = T)
+ pnorm(test.s, lower.tail = F)+pnorm(-test.s, lower.tail = T)
+```
+Answer: The test statistic is 2.088 and Pvalue = 0.037
+We accept the null hypothesis. 
+
+c) (2 pt) If you were the potato chip company would you rather have your alpha = 0.05 or
+0.025 in this case? Why?
+
+Answer: I would go with alpha = 0.25, to make it harder to reject the null hypothesis to catch the errors in the batches of potato chips.
+
+
+4) Regression was originally used by Francis Galton to study the relationship between parents
+and children. He wondered if he could predict a man's height based on the height of his father? This is the question we will explore in this problem. You can obtain data similar to that used by Galton as follows:
+library(UsingR)
+height <- get("father.son")
+a) (5 pt) Perform an exploratory analysis of the father and son heights. What does the
+relationship look like? Would a linear model be appropriate here?
+
+```{r}
+library (UsingR)
+height <- get ("father.son")
+plot(height)
+```
+The scatter plot shows a positive correlation between Father's height and Son's height. Higher the father's height, higher the Son's height. So I am assuming a linear model will be appropriate here.
+
+
+b) (5 pt) Use the lm function in R to fit a simple linear regression model to predict son's
+height as a function of father's height. Write down the model,
+ysheight = ??0 + ??1 x fheight
+filling in estimated coefficient values and interpret the coefficient estimates.
+```{r}
+plot(height)
+mod <- lm(sheight~fheight, data = height)
+abline (mod)
+```
+```{r}
+summary(mod)
+```
+Answer: ysheight = ??0 + ??1 x fheight
+Plugging in the respective slope and intercept from the linear model summary, we have:
+
+ysheight = 33.886 + 0.514 *fheight
+
+??1: A one inch increase in the father's height leads to a 0.514 inch increase in son's height.
+??0: when father's height is 0 inches, then the son's height is 33 inches.
+
+
+c) (5 pt) Find the 95% confidence intervals for the estimates. You may find the
+confint() command useful.
+
+```{r}
+confint(mod, level =0.95 )
+```
+Answer: The 95% confidence intervals for the estimate of slopes are (0.4610,0.5672).
+
+The 95% confidence intervals for the estimate of intercepts are (30.29, 37.48).
+
+
+d) (5 pt) Produce a visualization of the data and the least squares regression line.
+
+This visualization shows the linear model with the least squares regression line:
+```{r height, echo=FALSE} 
+plot(height)
+mod <- lm(sheight~fheight, data = height)
+abline (mod)
+```
+
+e) (5 pt) Produce a visualization of the residuals versus the fitted values. (You can inspect the elements of the linear model object in R using names()). Discuss what you see. Do you have any concerns about the linear model?
+```{r}
+plot(mod)
+
+```
+ANswer: The diferences (residuals) are forming a band around zero,not a lot of outliers, so it is a sign of good fitted linear model. 
+
+
+f) (5 pt) Using the model you fit in part (b) predict the height was 5 males whose father are
+50, 55, 70, 75, and 90 inches respectively. You may find the predict() function helpful.
+
+From (b) we get this equation:
+ysheight = 33.886 + 0.514 *fheight
+Using this equation we can compute the height of the 5 sons as below:
+```{r}
+fathers_height <- c(50, 55, 70, 75, 90)
+sons_height <- 33.886 + (0.514*fathers_height)
+sons_height
+```
+The Son's heights will be 59.586, 62.156, 69.866, 72.436, 80.146 inches respectively.
+
+Calculating the Sons's height using the predict function:
+```{r}
+Height_Son1 <- predict(mod, newdata=data.frame("fheight" = 50 ), interval ="prediction")
+Height_Son2 <- predict(mod, newdata=data.frame("fheight" = 55 ), interval ="prediction")
+Height_Son3 <- predict(mod, newdata=data.frame("fheight" = 70 ), interval ="prediction")
+Height_Son4 <- predict(mod, newdata=data.frame("fheight" = 75 ), interval ="prediction")
+Height_Son5 <- predict(mod, newdata=data.frame("fheight" = 90 ), interval ="prediction")
+Height_Son1
+Height_Son2
+Height_Son3
+Height_Son4
+Height_Son5
+```
+The heights of the 5 sons are 59.6, 62.2, 69.9, 72.4, 80.1 inches respectively. Predict() also gives the lowest and highest possible heights for each of the sons seen above.
+
+
+g) (5 pt) What do the estimates of the slope and height mean? Are the results statistically
+significant? Are they practically significant?
+
+Answer: 
+
+Slope-??1: A one inch increase in the father's height leads to a 0.514 inch increase in son's height.
+Intercept-??0: when father's height is 0 inches, then the son's height is 33 inches.
+From the Summary to the model, we see that the slope and height are statistically significant because the p value and low r-squared value. But they are not practically significant, as according to the slope, when father's height is 0 inches, then the son's height is 33 inches.
+
+
+5) An investigator is interested in understanding the relationship, if any, between the analytical skills of young gifted children and the father's IQ, the mother's IQ, and hours of educational TV. The data are here:
+library(openintro)
+data(gifted)
+```{r}
+library(openintro)
+data(gifted)
+
+```
+a) (5 pt) Run two regressions: one with the child's analytical skills test score ("score") and the father's IQ ("fatheriq") and the child's score and the mother's IQ score ("motheriq").
+
+Answer: This is the regression model between child's analytical skills test score ("score") and the father's IQ ("fatheriq")
+```{r}
+modf <- lm(score~fatheriq, data = gifted)
+summary(modf)
+```
+This is the regression model between child's analytical skills test score ("score") and the mother's IQ ("motheriq")
+
+```{r}
+modm <- lm(score~motheriq, data = gifted)
+summary(modm)
+```
+
+b) (5 pt) What are the estimates of the slopes for father and mother's IQ score with their 95% confidence intervals? (Note, estimates and confidence intervals are usually reported: Estimate (95% CI: CIlower, CIupper)
+
+Answer: These are the intercept and slope estimates of fatheriq~son's score regression with 95% confidence.
+```{r}
+confint(modf)
+```
+With respect to the father's IQ,  the slope intervals are between -0.2 to 0.7 and the intercept intervals are between 78.15 to 182.7.
+
+
+These are the intercept and slope estimates of fatheriq~son's score regression model with 95% confidence interval.
+```{r}
+confint(modm)
+```
+With respect to the mother's IQ, the slope intervals are between 0.2 to 0.6 and the intercept intervals are between 86.99 to 135.19.
+
+c) (5 pt) How are these interpreted?
+
+Answer: The slope for father's IQ score says that for every 1 unit increase in father's IQ the Son's score will increase 0.25(from summary). There is a 95% chance that the confidence intervals of-0.2 to 0.7 will hold the true slope estimate.
+
+The slope for mother's IQ score says that for every 1 unit increase in mother's IQ the Son's score will increase 0.41(from summary). There is a 95% chance that the confidence intervals of 0.2 to 0.6 will hold the true slope estimate.
+
+ 
+d) (5 pt) What conclusions can you draw about the association between the child's score
+and the mother and father's IQ?
+
+Answer:The adjusted R-squared is higher (0.3065) for the regression between Son's score and mother's IQ compared to that with father's IQ (0.007).Therefore, I think Mother's IQ predicts the Son's score better than Father's IQ.
+Also the p-value of the regression between father's IQ and Son's score is 0.272, which is more than 0.05 therefore we accept the null hypothesis, which means there is not much association between fatehr's IQ and son's score. But the p-value of the regression between mother's IQ and Son's score is 0.0002, which is less than 0.05, so we reject the null hypothesis and there is an association betweeen mother's IQ and son's score. 
